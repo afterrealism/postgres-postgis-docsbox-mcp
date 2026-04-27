@@ -1,0 +1,147 @@
+# postgres-postgis-docsbox-mcp (full reference)
+
+This is the long-form companion to `/llms.txt`. It covers the safety
+model, every tool's contract with a worked example, and operator setup.
+
+## Safety model (defence in depth)
+
+1. **Static SQL validation** (`sql_validator.py`)
+   - sqlglot parse — refuses anything sqlglot can't parse as Postgres
+   - Denylist of statement kinds (DROP, DELETE, INSERT, UPDATE, ALTER,
+     CREATE, GRANT, REVOKE, COPY, MERGE, VACUUM, TRUNCATE, EXEC, CALL,
+     LISTEN, NOTIFY, ...) and dangerous function names (`pg_read_file`,
+     `lo_import`, `lo_export`, `dblink`, `pg_terminate_backend`,
+     `pg_stat_file`, ...).
+   - Refuses semicolon-separated multi-statements.
+   - Forces top level to be SELECT, WITH, or EXPLAIN.
+   - Auto-injects `LIMIT N` if missing.
+
+2. **Read-only transaction** (`db.py`)
+   - `SET LOCAL statement_timeout = $T_ms`
+   - `SET LOCAL lock_timeout = $L_ms`
+   - `SET LOCAL idle_in_transaction_session_timeout = $I_ms`
+   - `SET TRANSACTION READ ONLY`
+   - Always `ROLLBACK` on context-manager exit (success or error).
+
+3. **Bounded results**
+   - Default `max_rows` 200, hard cap 1000.
+   - Per-cell byte cap 64 KiB; oversize bytes shown as `<N bytes, truncated>`.
+   - Geometry columns can be wrapped as GeoJSON via `ST_AsGeoJSON`.
+
+4. **No process fan-out**
+   - The only subprocess-shaped tool is `run_locally`, which returns a
+     plan and never invokes anything.
+
+## Tools
+
+### list_tables(schema_pattern='%', include_views=true, limit=500)
+
+Returns user tables/views excluding catalog/extension schemas
+(`pg_catalog`, `information_schema`, `pg_toast`, `tiger`, `tiger_data`,
+`topology`).
+
+```json
+{
+  "ok": true,
+  "tables": [
+    {"schema":"public","name":"suburbs","kind":"table","row_estimate":357,
+     "has_geom":true,"geom_column":"geom","srid":4326,"geom_type":"MULTIPOLYGON"}
+  ],
+  "count": 1
+}
+```
+
+### get_table_schema(table, sample_rows=3)
+
+Returns DDL + columns + primary key + indexes + N sample rows. Geometry
+columns in samples are returned as GeoJSON.
+
+### get_column_values(table, column, limit=20)
+
+Distinct values from one column, ordered by frequency descending.
+
+### list_srids()
+
+Every SRID in active use across `geometry_columns`, with a name and
+unit hint extracted from `spatial_ref_sys.srtext`.
+
+### get_relationships(table='')
+
+Foreign-key edges. With `table=''` returns all FKs in the database;
+with `table='public.schools'` returns only outbound FKs from that table.
+
+### list_extensions()
+
+Installed extensions and their versions — useful before the LLM tries
+`ST_*`, `<->`, `tsvector`, etc.
+
+### pick_interesting_tables(limit=10, compute_extent=true)
+
+Heuristic ranking that surfaces "where to look first" in an unfamiliar
+database. Score = `log10(row_estimate) + 2*has_spatial_idx +
+1*has_gin_idx + 1*has_inbound_fks`. With `compute_extent=true` the
+GeoJSON extent of each geometry table is included.
+
+### validate_sql(sql, default_limit=500)
+
+Static check; returns `{ok, sql, auto_limit_applied, error?, hint?}`.
+Cheap fast-fail before `execute_sql`.
+
+### explain_sql(sql, analyze=false)
+
+Returns `EXPLAIN (FORMAT JSON, BUFFERS, VERBOSE [, ANALYZE]) <sql>`.
+With `analyze=true` the query actually runs (still rolled back).
+
+### execute_sql(sql, max_rows=200, geometry_format='raw')
+
+Runs the query inside a read-only tx. Returns `{ok, sql, columns, rows,
+row_count, truncated}`. Errors are mapped to typed kinds with hints
+(`timeout`, `undefined_table`, `undefined_column`, `undefined_function`,
+`permission_denied`, `execute_failed`).
+
+### postgis_help(section='')
+
+Curated quick-reference for common PostGIS recipes (distance metres,
+nearest-k, point-in-polygon argument-order gotcha, buffer, reproject,
+spatial-join cookbook, common errors).
+
+### list_sections(package='') and get_documentation(section_id)
+
+Browse and fetch entries from `corpus/manifest.toml` (PostgreSQL,
+PostGIS, pgvector, psycopg, GDAL).
+
+### run_locally(task, ...)
+
+Plan-only tool that returns a structured shell-command plan for psql,
+pg_dump, pg_restore, vacuum, shp2pgsql, ogr2ogr, etc. *Never executes.*
+
+## Operator setup
+
+Required: `PG_DOCSBOX_DSN`. Example:
+
+```
+export PG_DOCSBOX_DSN='postgresql://docsbox:secret@127.0.0.1:5432/mydb'
+```
+
+Recommended Postgres-side hardening: create a role with only `pg_read_all_data`
+so even a hypothetical bypass of the transaction READ ONLY flag would still
+be denied at the catalog level.
+
+```sql
+CREATE ROLE docsbox LOGIN PASSWORD 'secret';
+GRANT pg_read_all_data TO docsbox;
+```
+
+Optional env vars:
+
+| Var | Default | Notes |
+|-----|---------|-------|
+| `PG_DOCSBOX_STATEMENT_TIMEOUT_MS` | 10000 | Per-statement time bound |
+| `PG_DOCSBOX_LOCK_TIMEOUT_MS` | 2000 | Lock-wait bound |
+| `PG_DOCSBOX_IDLE_TX_TIMEOUT_MS` | 5000 | Idle-in-tx bound |
+| `PG_DOCSBOX_METADATA_EXCLUDES` | "" | Comma-separated `schema.table` to hide |
+| `PG_DOCSBOX_BIND` | 127.0.0.1:7820 | host:port |
+| `PG_DOCSBOX_CORPUS_DIR` | packaged | Override doc manifest dir |
+| `PG_DOCSBOX_DISABLE_DNS_PROTECTION` | unset | Tests only |
+| `PG_DOCSBOX_ALLOWED_HOSTS` | "" | Extra Host header values |
+| `PG_DOCSBOX_ALLOWED_ORIGINS` | "" | Extra Origin header values |

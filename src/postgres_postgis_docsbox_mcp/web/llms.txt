@@ -1,0 +1,51 @@
+# postgres-postgis-docsbox-mcp
+
+A Model Context Protocol (MCP) server giving an LLM agent **safe, bounded
+read-only access** to a PostgreSQL + PostGIS database, plus a curated
+PostGIS reference and a docs/manifest lookup.
+
+## Safety properties
+
+- All database queries run inside `SET TRANSACTION READ ONLY` with
+  `statement_timeout`, `lock_timeout`, and `idle_in_transaction_session_timeout`
+  bounded; the transaction is rolled back regardless of outcome.
+- User-supplied SQL is statically validated (sqlglot + denylist) before it
+  ever reaches the database. Multi-statement payloads, DDL, DML, and
+  dangerous functions (`pg_read_file`, `lo_import`, `dblink`, `COPY ... TO PROGRAM`,
+  ...) are refused.
+- Result sizes are capped (rows, cell bytes, payload bytes).
+- The only subprocess tool (`run_locally`) is *plan-only* and never executes.
+
+## Endpoints
+
+- `GET /` HTML landing page
+- `GET /health` JSON health
+- `POST /mcp` MCP transport (streamable HTTP)
+- `GET /llms.txt` this file
+- `GET /llms-full.txt` longer reference
+- `GET /robots.txt`, `GET /sitemap.xml`
+
+## Tools
+
+| Tool | Purpose |
+|------|---------|
+| `list_tables` | User tables/views with row estimate, geometry flag, SRID |
+| `get_table_schema` | DDL + sample rows + indexes |
+| `get_column_values` | Distinct sample values for a column |
+| `list_srids` | SRIDs in active use, with column counts |
+| `get_relationships` | Foreign-key edges |
+| `list_extensions` | Installed extensions (PostGIS, pgvector, ...) |
+| `pick_interesting_tables` | Score by rows + geom density + FK hubness |
+| `validate_sql` | Static safety check (no DB needed) |
+| `explain_sql` | EXPLAIN [ANALYZE] in a rolled-back tx |
+| `execute_sql` | SELECT/WITH/EXPLAIN with row caps |
+| `postgis_help` | Curated PostGIS recipe reference |
+| `list_sections` / `get_documentation` | Doc manifest browser |
+| `run_locally` | Plan-only execution recipes (psql, pg_dump, ogr2ogr) |
+
+## Configure
+
+```
+export PG_DOCSBOX_DSN=postgresql://user:pass@host:5432/db
+postgres-postgis-docsbox-mcp
+```

@@ -1,0 +1,233 @@
+# Curated reference manifest for postgres-postgis-docsbox-mcp.
+#
+# Each [[section]] entry is a heading + URL pair; tools resolve content by
+# fetching the URL on demand (cached). Keep entries grouped logically — the
+# `package` filter on `list_sections` matches against the `package` field.
+
+[meta]
+generated = "2026-04-27"
+notes = "Curated PostgreSQL 17 + PostGIS 3.5 + adjacent extension docs."
+
+# ---------------------------------------------------------------------------
+# PostgreSQL core
+# ---------------------------------------------------------------------------
+
+[[section]]
+id = "pg.tutorial.queries"
+title = "PostgreSQL: Querying a Table"
+package = "postgresql"
+url = "https://www.postgresql.org/docs/17/tutorial-select.html"
+
+[[section]]
+id = "pg.sql.select"
+title = "PostgreSQL: SELECT statement"
+package = "postgresql"
+url = "https://www.postgresql.org/docs/17/sql-select.html"
+
+[[section]]
+id = "pg.sql.with"
+title = "PostgreSQL: WITH (Common Table Expressions)"
+package = "postgresql"
+url = "https://www.postgresql.org/docs/17/queries-with.html"
+
+[[section]]
+id = "pg.sql.window"
+title = "PostgreSQL: Window Functions"
+package = "postgresql"
+url = "https://www.postgresql.org/docs/17/tutorial-window.html"
+
+[[section]]
+id = "pg.sql.json"
+title = "PostgreSQL: JSON Functions and Operators"
+package = "postgresql"
+url = "https://www.postgresql.org/docs/17/functions-json.html"
+
+[[section]]
+id = "pg.indexes.types"
+title = "PostgreSQL: Index Types (B-tree, Hash, GiST, SP-GiST, GIN, BRIN)"
+package = "postgresql"
+url = "https://www.postgresql.org/docs/17/indexes-types.html"
+
+[[section]]
+id = "pg.explain"
+title = "PostgreSQL: Using EXPLAIN"
+package = "postgresql"
+url = "https://www.postgresql.org/docs/17/using-explain.html"
+
+[[section]]
+id = "pg.transactions"
+title = "PostgreSQL: Transactions"
+package = "postgresql"
+url = "https://www.postgresql.org/docs/17/tutorial-transactions.html"
+
+[[section]]
+id = "pg.psql"
+title = "PostgreSQL: psql client"
+package = "postgresql"
+url = "https://www.postgresql.org/docs/17/app-psql.html"
+
+[[section]]
+id = "pg.pg_dump"
+title = "PostgreSQL: pg_dump"
+package = "postgresql"
+url = "https://www.postgresql.org/docs/17/app-pgdump.html"
+
+[[section]]
+id = "pg.copy"
+title = "PostgreSQL: COPY command"
+package = "postgresql"
+url = "https://www.postgresql.org/docs/17/sql-copy.html"
+
+[[section]]
+id = "pg.functions.aggregate"
+title = "PostgreSQL: Aggregate Functions"
+package = "postgresql"
+url = "https://www.postgresql.org/docs/17/functions-aggregate.html"
+
+[[section]]
+id = "pg.functions.string"
+title = "PostgreSQL: String Functions and Operators"
+package = "postgresql"
+url = "https://www.postgresql.org/docs/17/functions-string.html"
+
+[[section]]
+id = "pg.functions.datetime"
+title = "PostgreSQL: Date/Time Functions and Operators"
+package = "postgresql"
+url = "https://www.postgresql.org/docs/17/functions-datetime.html"
+
+# ---------------------------------------------------------------------------
+# PostGIS
+# ---------------------------------------------------------------------------
+
+[[section]]
+id = "postgis.intro"
+title = "PostGIS: Introduction & install"
+package = "postgis"
+url = "https://postgis.net/docs/manual-3.5/postgis_installation.html"
+
+[[section]]
+id = "postgis.using"
+title = "PostGIS: Using PostGIS — geometry types, SRIDs, indexes"
+package = "postgis"
+url = "https://postgis.net/docs/manual-3.5/using_postgis_dbmanagement.html"
+
+[[section]]
+id = "postgis.reference"
+title = "PostGIS: Function reference"
+package = "postgis"
+url = "https://postgis.net/docs/manual-3.5/reference.html"
+
+[[section]]
+id = "postgis.st_dwithin"
+title = "PostGIS: ST_DWithin"
+package = "postgis"
+url = "https://postgis.net/docs/manual-3.5/ST_DWithin.html"
+
+[[section]]
+id = "postgis.st_distance"
+title = "PostGIS: ST_Distance"
+package = "postgis"
+url = "https://postgis.net/docs/manual-3.5/ST_Distance.html"
+
+[[section]]
+id = "postgis.st_intersects"
+title = "PostGIS: ST_Intersects"
+package = "postgis"
+url = "https://postgis.net/docs/manual-3.5/ST_Intersects.html"
+
+[[section]]
+id = "postgis.st_contains"
+title = "PostGIS: ST_Contains (argument order matters)"
+package = "postgis"
+url = "https://postgis.net/docs/manual-3.5/ST_Contains.html"
+
+[[section]]
+id = "postgis.st_buffer"
+title = "PostGIS: ST_Buffer (geometry vs geography)"
+package = "postgis"
+url = "https://postgis.net/docs/manual-3.5/ST_Buffer.html"
+
+[[section]]
+id = "postgis.st_transform"
+title = "PostGIS: ST_Transform (reproject)"
+package = "postgis"
+url = "https://postgis.net/docs/manual-3.5/ST_Transform.html"
+
+[[section]]
+id = "postgis.st_asgeojson"
+title = "PostGIS: ST_AsGeoJSON"
+package = "postgis"
+url = "https://postgis.net/docs/manual-3.5/ST_AsGeoJSON.html"
+
+[[section]]
+id = "postgis.st_makeenvelope"
+title = "PostGIS: ST_MakeEnvelope (bbox query)"
+package = "postgis"
+url = "https://postgis.net/docs/manual-3.5/ST_MakeEnvelope.html"
+
+[[section]]
+id = "postgis.geography"
+title = "PostGIS: Geography vs Geometry"
+package = "postgis"
+url = "https://postgis.net/docs/manual-3.5/PostGIS_Special_Functions_Index.html"
+
+[[section]]
+id = "postgis.tuning"
+title = "PostGIS: Performance tips"
+package = "postgis"
+url = "https://postgis.net/docs/manual-3.5/performance_tips.html"
+
+[[section]]
+id = "postgis.errors"
+title = "PostGIS: Common errors and fixes"
+package = "postgis"
+url = "https://postgis.net/docs/manual-3.5/PostGIS_FAQ.html"
+
+# ---------------------------------------------------------------------------
+# pgvector
+# ---------------------------------------------------------------------------
+
+[[section]]
+id = "pgvector.readme"
+title = "pgvector: README (operators, index types, examples)"
+package = "pgvector"
+url = "https://github.com/pgvector/pgvector/blob/master/README.md"
+
+# ---------------------------------------------------------------------------
+# psycopg
+# ---------------------------------------------------------------------------
+
+[[section]]
+id = "psycopg.basic"
+title = "psycopg 3: basic usage"
+package = "psycopg"
+url = "https://www.psycopg.org/psycopg3/docs/basic/usage.html"
+
+[[section]]
+id = "psycopg.copy"
+title = "psycopg 3: COPY support"
+package = "psycopg"
+url = "https://www.psycopg.org/psycopg3/docs/basic/copy.html"
+
+[[section]]
+id = "psycopg.pool"
+title = "psycopg 3: connection pool"
+package = "psycopg"
+url = "https://www.psycopg.org/psycopg3/docs/advanced/pool.html"
+
+# ---------------------------------------------------------------------------
+# Loaders
+# ---------------------------------------------------------------------------
+
+[[section]]
+id = "ogr2ogr.postgis"
+title = "GDAL: ogr2ogr -> PostGIS driver"
+package = "gdal"
+url = "https://gdal.org/drivers/vector/pg.html"
+
+[[section]]
+id = "shp2pgsql"
+title = "PostGIS: shp2pgsql"
+package = "postgis"
+url = "https://postgis.net/docs/manual-3.5/using_postgis_dbmanagement.html#shp2pgsql_usage"

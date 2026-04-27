@@ -1,0 +1,10 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "postgres-postgis-docsbox": {
+      "type": "remote",
+      "url": "http://127.0.0.1:7820/mcp",
+      "enabled": true
+    }
+  }
+}
