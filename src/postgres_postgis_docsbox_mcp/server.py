@@ -81,13 +81,13 @@ def _default_security(host: str, port: int) -> TransportSecuritySettings:
         f"localhost:{port}",
         "127.0.0.1:*",
         "localhost:*",
-        "postgres-mcp.afterrealism.com",
-        "postgres-mcp.afterrealism.com:*",
+        "pg-mcp.afterrealism.com",
+        "pg-mcp.afterrealism.com:*",
     ]
     base_origins = [
         f"http://127.0.0.1:{port}",
         f"http://localhost:{port}",
-        "https://postgres-mcp.afterrealism.com",
+        "https://pg-mcp.afterrealism.com",
     ]
     return TransportSecuritySettings(
         enable_dns_rebinding_protection=True,
